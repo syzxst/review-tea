@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>评价查看后台</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        body { padding: 30px; max-width: 600px; margin: 0 auto; }
+        h3 { margin-bottom: 20px; color: #333; }
+        .code-input { width: 100%; height: 100px; padding: 10px; border: 1px solid #eee; border-radius: 6px; margin-bottom: 15px; resize: none; font-size: 14px; }
+        .view-btn { padding: 10px 25px; border: none; border-radius: 6px; background: #007bff; color: #fff; cursor: pointer; font-size: 16px; }
+        .review-item { border: 1px solid #eee; padding: 15px; margin: 15px 0; border-radius: 8px; }
+        .review-item p { margin: 8px 0; color: #555; }
+    </style>
+</head>
+<body>
+    <h3>输入用户的查看码，查看评价</h3>
+    <textarea class="code-input" id="codeInput" placeholder="请输入用户提交的查看码..."></textarea>
+    <button class="view-btn" onclick="showReview()">查看评价</button>
+    <div id="reviewResult"></div>
+
+    <script>
+        function showReview() {
+            const code = document.getElementById('codeInput').value.trim();
+            if (!code) return alert('请输入查看码');
+            try {
+                const data = JSON.parse(atob(code));
+                document.getElementById('reviewResult').innerHTML = `
+                    <div class="review-item">
+                        <p><strong>星级：</strong>${data.star}星</p>
+                        <p><strong>评价：</strong>${data.content}</p>
+                        <p><strong>时间：</strong>${data.time}</p>
+                    </div>
+                `;
+            } catch (e) {
+                alert('查看码无效，请检查输入');
+            }
+        }
+    </script>
+</body>
+</html>
