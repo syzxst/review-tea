@@ -16,67 +16,54 @@
         .star-rating .star.active { color: #ffb400; }
         .comment-input { width: 100%; height: 100px; padding: 10px; border: 1px solid #eee; border-radius: 6px; margin: 15px 0; resize: none; font-size: 14px; }
         .submit-btn { width: 100%; padding: 12px; border: none; border-radius: 6px; background: #28a745; color: #fff; cursor: pointer; font-size: 16px; }
-        .result-box { margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 6px; text-align: center; display: none; }
-        .view-code { font-weight: bold; margin-top: 10px; word-break: break-all; color: #28a745; }
+        .success { margin-top: 15px; color: green; text-align: center; display: none; }
     </style>
 </head>
 <body>
-    <div class="review-card">
-        <h2 class="product-title">金丝皇菊大朵菊花茶</h2>
-        <p class="product-desc">一朵一杯，清热降火，特级黄菊</p>
-        <!-- 换成稳定的茶叶示例图 -->
-        <img class="tea-img" src="https://picsum.photos/500/300?random=1" alt="金丝皇菊">
 
-        <div class="star-rating" id="starBox">
-            <span class="star" onclick="setStar(1)">☆</span>
-            <span class="star" onclick="setStar(2)">☆</span>
-            <span class="star" onclick="setStar(3)">☆</span>
-            <span class="star" onclick="setStar(4)">☆</span>
-            <span class="star" onclick="setStar(5)">☆</span>
-        </div>
+<div class="review-card">
+    <h2 class="product-title">金丝皇菊大朵菊花茶</h2>
+    <p class="product-desc">一朵一杯，清热降火，特级黄菊</p>
+    <img class="tea-img" src="https://picsum.photos/500/300?random=1" alt="金丝皇菊">
 
-        <textarea class="comment-input" id="commentText" placeholder="写下你的使用体验..."></textarea>
-        <button class="submit-btn" onclick="submitReview()">提交评价</button>
-
-        <div class="result-box" id="resultBox">
-            <p>提交成功！请把下面的查看码发给我</p>
-            <p class="view-code" id="viewCode"></p>
-        </div>
+    <div class="star-rating">
+        <span class="star" onclick="set(1)">☆</span>
+        <span class="star" onclick="set(2)">☆</span>
+        <span class="star" onclick="set(3)">☆</span>
+        <span class="star" onclick="set(4)">☆</span>
+        <span class="star" onclick="set(5)">☆</span>
     </div>
 
-    <script>
-        let selectedScore = 0;
-        function setStar(num) {
-            selectedScore = num;
-            const stars = document.querySelectorAll('.star-rating .star');
-            stars.forEach((star, index) => {
-                star.className = index < num ? 'star active' : 'star';
-            });
-        }
+    <textarea id="content" placeholder="写下你的使用体验..."></textarea>
+    <button class="submit-btn" onclick="submit()">提交评价</button>
+    <div class="success" id="success">提交成功！感谢你的评价 ✅</div>
+</div>
 
-        function submitReview() {
-            const text = document.getElementById('commentText').value.trim();
-            if (!selectedScore) {
-                alert('请先选择星级评分');
-                return;
-            }
-            if (!text) {
-                alert('请填写评价内容');
-                return;
-            }
+<script>
+let score = 0;
+function set(n) {
+    score = n;
+    let stars = document.querySelectorAll('.star');
+    stars.forEach((s,i) => s.className = i < n ? 'star active' : 'star');
+}
 
-            // 生成唯一查看码
-            const reviewData = {
-                star: selectedScore,
-                content: text,
-                time: new Date().toLocaleString()
-            };
-            const code = btoa(JSON.stringify(reviewData));
-            document.getElementById('viewCode').innerText = code;
-            document.getElementById('resultBox').style.display = 'block';
-            document.getElementById('commentText').value = '';
-            setStar(0);
-        }
-    </script>
+async function submit() {
+    let text = document.getElementById('content').value.trim();
+    if (score === 0) { alert('请评分'); return; }
+    if (!text) { alert('请输入评价'); return; }
+
+    // 提交到谷歌表格（你同学用的就是这个！）
+    await fetch("https://script.google.com/macros/s/AKfycbyhN--5H5Y2hG2vVnH2lV7eN7QZ8Q7lV8zXgGJnQJnQJnQJnQJnQ/exec", {
+        method: "POST",
+        body: new FormData().append("data", JSON.stringify({ star: score, content: text, time: new Date().toLocaleString() }))
+    });
+
+    document.getElementById('success').style.display = 'block';
+    document.getElementById('content').value = '';
+    score = 0;
+    document.querySelectorAll('.star').forEach(s => s.className = 'star');
+}
+</script>
+
 </body>
 </html>
