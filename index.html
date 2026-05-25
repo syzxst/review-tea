@@ -20,7 +20,6 @@
     </style>
 </head>
 <body>
-
 <div class="review-card">
     <h2 class="product-title">金丝皇菊大朵菊花茶</h2>
     <p class="product-desc">一朵一杯，清热降火，特级黄菊</p>
@@ -51,19 +50,22 @@ async function submit() {
     let text = document.getElementById('content').value.trim();
     if (score === 0) { alert('请评分'); return; }
     if (!text) { alert('请输入评价'); return; }
-
-    // 提交到谷歌表格（你同学用的就是这个！）
-    await fetch("https://script.google.com/macros/s/AKfycbyhN--5H5Y2hG2vVnH2lV7eN7QZ8Q7lV8zXgGJnQJnQJnQJnQJnQ/exec", {
-        method: "POST",
-        body: new FormData().append("data", JSON.stringify({ star: score, content: text, time: new Date().toLocaleString() }))
+    const postData = JSON.stringify({
+        star: score,
+        content: text,
+        time: new Date().toLocaleString()
     });
-
+    //此处替换成你自己的谷歌脚本部署链接
+    const apiUrl = "https://script.google.com/macros/s/AKfycbwCx8Alf6CATwl7FRBqNKFGRuCFRVKgJxO2DE0WhQhRM9r_dsyE3WWmzy6fn8HAoBFVbQ/exec";
+    await fetch(apiUrl, {
+        method: "POST",
+        body: new FormData().append("data", postData)
+    });
     document.getElementById('success').style.display = 'block';
     document.getElementById('content').value = '';
     score = 0;
     document.querySelectorAll('.star').forEach(s => s.className = 'star');
 }
 </script>
-
 </body>
 </html>
